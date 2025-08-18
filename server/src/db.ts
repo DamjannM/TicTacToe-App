@@ -9,4 +9,14 @@ db.exec(`
     )
     `);
 
+db.exec(`
+    CREATE TABLE game (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    board TEXT,
+    player TEXT,
+    turn TEXT,
+    game_ended BOOLEAN DEFAULT 0,
+    game_result TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id))`);
 export default db;

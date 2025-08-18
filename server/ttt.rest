@@ -1,14 +1,14 @@
 ### GET /
 
-GET http://localhost:5000
+GET http://localhost:5000/
 
 ### Register
 POST http://localhost:5000/auth/register
 Content-Type: application/json
 
 {
-    "email": "test",
-    "password": "test"
+    "email": "ts",
+    "password": "ts"
 }
 
 ### Login
@@ -16,6 +16,36 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-    "email": "test",
-    "password": "test"
+    "email": "ts",
+    "password": "ts"
+}
+
+###Fetch
+GET http://localhost:5000/game
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+
+### Create
+POST http://localhost:5000/game
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+Content-Type: application/json
+
+{
+    "board":["", "", "", "", "", "", "", "", ""],
+    "player": "X",
+    "turn": "X",
+    "game_result": "In progress",
+    "game_ended": 0
+}
+
+### Update
+PUT http://localhost:5000/game/1
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+
+{
+    "board":["X", "O", "", "", "", "", "", "", ""],
+    "player": "X",
+    "turn": "X",
+    "game_result": "X won",
+    "game_ended": 0
 }

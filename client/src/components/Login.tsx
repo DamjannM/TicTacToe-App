@@ -1,10 +1,24 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { useState } from 'react';
 
-function Login({ token }: { token: string }) {
+interface ChildProps {
+  token: string;
+  setIsRegistered: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLogedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Login: React.FC<ChildProps> = ({
+  token,
+  setIsRegistered,
+  setIsLogedIn,
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [serverMessage, setServerMessage] = useState('');
+  const handleRegister = () => {
+    setIsRegistered(false);
+  };
 
   const handleLogin = async () => {
     try {
@@ -16,29 +30,48 @@ function Login({ token }: { token: string }) {
           password: password,
         }),
       });
-
+      const data = await response.json();
+      setEmail('');
+      setPassword('');
       if (!response.ok) {
+        setServerMessage(`❌ ${data.message}`);
         throw new Error(`Server error: ${response.status}`);
       }
 
-      const data = await response.json();
       if (data.token) {
         token = data.token;
         localStorage.setItem('token', token);
       } else {
         throw Error('❌ Failed to authenticate...');
       }
+      setIsLogedIn(true);
     } catch (err) {
       console.log('Login failed', err);
+      // setServerMessage(String(err));
     }
   };
   return (
-    <Box>
+    <Box sx={{ pt: 20 }}>
+      <Typography variant="subtitle2">{serverMessage}</Typography>
       <TextField
         label="email"
         size="small"
         onChange={(e) => {
           setEmail(e.target.value);
+        }}
+        value={email}
+        sx={{
+          input: { color: 'white' },
+          label: { color: 'white' },
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
+            '&:hover fieldset': {
+              borderColor: '#3f50b5',
+            },
+            '& fieldset': {
+              borderColor: '#3f50b5',
+            },
+          },
         }}
       />
 
@@ -49,13 +82,31 @@ function Login({ token }: { token: string }) {
         onChange={(e) => {
           setPassword(e.target.value);
         }}
+        value={password}
+        sx={{
+          input: { color: 'white' },
+          label: { color: 'white' },
+          '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
+            '&:hover fieldset': {
+              borderColor: '#3f50b5',
+            },
+            '& fieldset': {
+              borderColor: '#3f50b5',
+            },
+          },
+        }}
       />
 
-      <Button variant="outlined" onClick={handleLogin}>
+      <Button variant="outlined" onClick={handleLogin} size="large">
         Login
+      </Button>
+      <Typography variant="subtitle2">Dont have an account yet? </Typography>
+      <Button onClick={handleRegister} size="large">
+        Register
       </Button>
     </Box>
   );
-}
+};
 
 export default Login;
