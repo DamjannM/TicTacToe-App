@@ -17,7 +17,6 @@ function App() {
   const [isRegistered, setIsRegistered] = useState(true);
   const [isLogedIn, setIsLogedIn] = useState(false);
 
-  //transfered from layout
   const [games, setGames] = useState<Game[]>([]);
   const [gameId, setGameId] = useState<number>(1);
   const [currentGame, setCurrentGame] = useState(1);
@@ -105,7 +104,12 @@ function App() {
               games={games}
             />
             {games.length > 0 ? (
-              <Board boardGame={games[currentGame - 1]?.board} />
+              <Board
+                boardGame={games[currentGame - 1]?.board}
+                playerGame={games[currentGame - 1]?.player}
+                turnGame={games[currentGame - 1]?.turn}
+                gameEndedGame={Boolean(games[currentGame - 1]?.game_ended)}
+              />
             ) : (
               <p>Loading game...</p>
             )}

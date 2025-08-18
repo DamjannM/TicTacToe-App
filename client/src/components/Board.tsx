@@ -3,12 +3,19 @@ import Square from './Square';
 import { Patterns } from '../WinningPatterns';
 import { Button } from '@mui/material';
 
-function Board({ boardGame }: { boardGame: string[] }) {
+type BoardProps = {
+  boardGame: string[];
+  playerGame: string;
+  turnGame: string;
+  gameEndedGame: boolean;
+};
+
+function Board({ boardGame, playerGame, turnGame, gameEndedGame }: BoardProps) {
   const [board, setBoard] = useState(boardGame);
-  const [player, setPlayer] = useState('X');
-  const [turn, setTurn] = useState('X');
-  const [gameEnded, setGameEnded] = useState(false);
-  console.log(boardGame);
+  const [player, setPlayer] = useState(playerGame);
+  const [turn, setTurn] = useState(turnGame);
+  const [gameEnded, setGameEnded] = useState(gameEndedGame);
+  console.log(boardGame, playerGame, turnGame, gameEndedGame);
 
   useEffect(() => {
     checkWin();
@@ -18,8 +25,11 @@ function Board({ boardGame }: { boardGame: string[] }) {
   useEffect(() => {
     if (boardGame) {
       setBoard(boardGame);
+      setPlayer(playerGame);
+      setTurn(turnGame);
+      setGameEnded(gameEndedGame);
     }
-  }, [boardGame]);
+  }, [boardGame, playerGame, turnGame, gameEndedGame]);
 
   const gameReset = () => {
     setBoard(['', '', '', '', '', '', '', '', '']);
