@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NTI2MjU4LCJleHAiOjE3NTU2MTI2NTh9.2FWKQxu9ox7mV15YUQgp5VHgMsR8vDzQqpyKWT0SxUc
 
 ### Create
 POST http://localhost:5000/game
@@ -43,7 +43,7 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
 
 {
-    "board":["X", "O", "", "", "", "", "", "", ""],
+    "board":["X", "", "", "", "", "", "", "", ""],
     "player": "X",
     "turn": "X",
     "game_result": "X won",

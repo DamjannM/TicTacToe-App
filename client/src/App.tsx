@@ -3,6 +3,7 @@ import SignUp from './components/SignUp.tsx';
 import Board from './components/Board.tsx';
 import { useState, useEffect } from 'react';
 import Layout from './components/Layout.tsx';
+import NavBar from './components/NavBar.tsx';
 
 type Game = {
   id: number;
@@ -26,6 +27,11 @@ function App() {
     else {
       setCurrentGame(gameId);
     }
+  };
+
+  const handleLogOut = () => {
+    setIsLogedIn(false);
+    localStorage.removeItem('token');
   };
 
   const fetchGame = async () => {
@@ -96,6 +102,7 @@ function App() {
         <p>TicTacToe</p>
         {isLogedIn ? (
           <>
+            <NavBar handleLogOut={handleLogOut} />
             <Layout
               setGameId={setGameId}
               currentGame={currentGame}
