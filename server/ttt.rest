@@ -16,13 +16,13 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-    "email": "tes",
-    "password": "tes"
+    "email": "ts",
+    "password": "ts"
 }
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NjI5NzIwLCJleHAiOjE3NTU3MTYxMjB9.cVl1kgz-XrgAePQO28kYBFm-wOktP-GAjyp34IfsY28
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NzE5MzUyLCJleHAiOjE3NTU4MDU3NTJ9.D5vuW5ClpP833pOkAJGqFl8WGcPqGSGnoM9DloBjQms
 
 ### Create
 POST http://localhost:5000/game
@@ -38,14 +38,14 @@ Content-Type: application/json
 }
 
 ### Update
-PUT http://localhost:5000/game/1
+PUT http://localhost:5000/game/2
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NzExMzUwLCJleHAiOjE3NTU3OTc3NTB9.AS2vpDxJqof6FaBEGkCiFmor-qO9ON3-0LwFif4tJWc
 
 {
     "board":["X", "", "X", "O", "", "X", "", "O", ""],
-    "player": "X",
-    "turn": "X",
+    "player": "O",
+    "turn": "O",
     "game_result": "X won",
     "game_ended": 0
 }

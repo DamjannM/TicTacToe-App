@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Square from './Square';
 import { Patterns } from '../WinningPatterns';
-import { Button } from '@mui/material';
+
 type Game = {
   id: number;
   board: string[];
@@ -15,13 +15,10 @@ type BoardProps = {
 };
 
 function Board({ games }: BoardProps) {
-  // console.log(games.id);
-  // if (!games) return <div>Loading...</div>;
   const [board, setBoard] = useState(games.board);
   const [player, setPlayer] = useState(games.player);
   const [turn, setTurn] = useState(games.turn);
   const [gameEnded, setGameEnded] = useState(Boolean(games.game_ended));
-  // console.log(boardGame, playerGame, turnGame, gameEndedGame);
 
   useEffect(() => {
     checkWin();
@@ -35,14 +32,7 @@ function Board({ games }: BoardProps) {
       setTurn(games.turn);
       setGameEnded(Boolean(games.game_ended));
     }
-  }, [games, games.board, games.player, games.turn, games.game_ended]);
-
-  const gameReset = () => {
-    setBoard(['', '', '', '', '', '', '', '', '']);
-    setGameEnded(false);
-    setTurn('X');
-    setPlayer('X');
-  };
+  }, [games]);
 
   const checkWin = () => {
     Patterns.forEach((currPattern) => {
@@ -62,7 +52,12 @@ function Board({ games }: BoardProps) {
   };
 
   const checkIfTie = () => {
+    if (!Array.isArray(board)) {
+      console.warn('Board is not an array:', board);
+      return;
+    }
     let filled = true;
+    console.log(board);
     board.forEach((square) => {
       if (square == '') {
         filled = false;
@@ -75,22 +70,42 @@ function Board({ games }: BoardProps) {
     }
   };
 
-  const chooseSquare = (square: number) => {
-    if (turn === player && board[square] === '') {
-      setTurn(player === 'X' ? 'O' : 'X');
+  const chooseSquare = async (square: number) => {
+    if (turn !== player || board[square] !== '') return;
+    const newBoard = board.map((val, i) => (i === square ? player : val));
+    const newTurn = player === 'X' ? 'O' : 'X';
+    const newPlayer = newTurn;
+    setBoard(newBoard);
+    setTurn(newTurn);
+    setPlayer(newPlayer);
 
-      setBoard(
-        board.map((val, i) => {
-          if (i === square && val === '') {
-            return player;
-          }
-          return val;
-        })
-      );
-      //update DB
+    try {
+      const token = localStorage.getItem('token');
+      const updatedGame = {
+        board: newBoard,
+        player: newPlayer,
+        turn: newTurn,
+        game_result: 'In progress',
+        game_ended: 0,
+      };
+      console.log(updatedGame.player, updatedGame.turn);
+
+      const response = await fetch(`http://localhost:5000/game/${games.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: token } : {}),
+        },
+        body: JSON.stringify(updatedGame),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update game ${errorText}`);
+      }
+    } catch (err) {
+      console.error(err);
     }
-    if (player === 'X') setPlayer('O');
-    else if (player === 'O') setPlayer('X');
   };
 
   return (
@@ -146,7 +161,6 @@ function Board({ games }: BoardProps) {
           gameEnded={gameEnded}
         />
       </div>
-      <Button onClick={gameReset}>New Game</Button>
     </div>
   );
 }

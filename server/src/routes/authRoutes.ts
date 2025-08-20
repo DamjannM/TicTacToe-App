@@ -2,7 +2,6 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "../db";
-// import { secureHeapUsed } from "crypto";
 
 const router = express.Router();
 
@@ -17,7 +16,7 @@ router.post("/register", (req, res) => {
         VALUES (?, ?)`);
     const result = insertUser.run(email, hashedPassword);
     //creating 1st default game
-    const board = ["X", "", "", "", "", "", "", "", ""];
+    const board = ["", "", "", "", "", "", "", "", ""];
     const boardJSON = JSON.stringify(board);
     const player = "X";
     const turn = "X";

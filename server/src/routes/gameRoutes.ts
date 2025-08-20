@@ -37,14 +37,14 @@ router.post("/", (req, res) => {
 
 // Update game
 router.put("/:id", (req, res) => {
-  const { board, turn, game_result, game_ended } = req.body;
+  const { board, turn, game_result, game_ended, player } = req.body;
   const jsonString = JSON.stringify(board);
   const { id } = req.params;
 
   const updatedGame = db.prepare(
-    "UPDATE game SET board = ?,turn =?,game_result=?,game_ended=? WHERE ID = ?"
+    "UPDATE game SET board = ?,player=?, turn =?,game_result=?,game_ended=? WHERE ID = ?"
   );
-  updatedGame.run(jsonString, turn, game_result, game_ended, id);
+  updatedGame.run(jsonString, player, turn, game_result, game_ended, id);
   res.json({ message: "Game updated" });
 });
 

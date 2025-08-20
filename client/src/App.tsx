@@ -61,9 +61,10 @@ function App() {
         setCurrentGame(data[data.length - 1].id);
       }
       if (mode === 'update') {
-        const currentGameId = games.findIndex((game) => game.id === gameId);
         setGames(parsedGames);
-        setFetchedGameId(parsedGames[currentGameId]);
+        const currentGameId = games.findIndex((game) => game.id === gameId);
+        if (gameId > currentGameId) return;
+        else setFetchedGameId(parsedGames[currentGameId]);
       }
     } catch (err) {
       console.log(err);
@@ -71,16 +72,12 @@ function App() {
   };
 
   const handleCurrentGame = () => {
-    // console.log(games[currentGame - 1]?.id);
-    // console.log(games.find((g) => g.id === gameId));
     fetchGame('update');
     const currentGameId = games.findIndex((game) => game.id === gameId);
-    // console.log(gameId, games[currentGameId].id);
 
     if (currentGameId == -1) return alert(`Game doesn't exist`);
     else {
       setCurrentGame(games[currentGameId].id);
-      //Moram setovati fetchedgameid da bude id partije
       setFetchedGameId(games[currentGameId]);
     }
   };
@@ -113,8 +110,6 @@ function App() {
       const data = await response.json();
       console.log(data);
       fetchGame('create');
-      // setCurrentGame(data.id);
-      // setFetchedGameId(data);
     } catch (err) {
       console.log(err);
     }
@@ -125,10 +120,6 @@ function App() {
       fetchGame('login');
     }
   }, [isLogedIn]);
-  // useEffect(() => {
-  //   fetchGame();
-  // }, [fetchedGameId]);
-  // console.log(games);
 
   const token = localStorage.getItem('token') || '';
 
