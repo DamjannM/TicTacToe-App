@@ -2,20 +2,26 @@ import React, { useEffect, useState } from 'react';
 import Square from './Square';
 import { Patterns } from '../WinningPatterns';
 import { Button } from '@mui/material';
-
+type Game = {
+  id: number;
+  board: string[];
+  player: string;
+  turn: string;
+  game_result: string;
+  game_ended: number;
+};
 type BoardProps = {
-  boardGame: string[];
-  playerGame: string;
-  turnGame: string;
-  gameEndedGame: boolean;
+  games: Game;
 };
 
-function Board({ boardGame, playerGame, turnGame, gameEndedGame }: BoardProps) {
-  const [board, setBoard] = useState(boardGame);
-  const [player, setPlayer] = useState(playerGame);
-  const [turn, setTurn] = useState(turnGame);
-  const [gameEnded, setGameEnded] = useState(gameEndedGame);
-  console.log(boardGame, playerGame, turnGame, gameEndedGame);
+function Board({ games }: BoardProps) {
+  // console.log(games);
+  // if (!games) return <div>Loading...</div>;
+  const [board, setBoard] = useState(games.board);
+  const [player, setPlayer] = useState(games.player);
+  const [turn, setTurn] = useState(games.turn);
+  const [gameEnded, setGameEnded] = useState(Boolean(games.game_ended));
+  // console.log(boardGame, playerGame, turnGame, gameEndedGame);
 
   useEffect(() => {
     checkWin();
@@ -23,13 +29,13 @@ function Board({ boardGame, playerGame, turnGame, gameEndedGame }: BoardProps) {
   }, [board]);
 
   useEffect(() => {
-    if (boardGame) {
-      setBoard(boardGame);
-      setPlayer(playerGame);
-      setTurn(turnGame);
-      setGameEnded(gameEndedGame);
+    if (games) {
+      setBoard(games.board);
+      setPlayer(games.player);
+      setTurn(games.turn);
+      setGameEnded(Boolean(games.game_ended));
     }
-  }, [boardGame, playerGame, turnGame, gameEndedGame]);
+  }, [games, games.board, games.player, games.turn, games.game_ended]);
 
   const gameReset = () => {
     setBoard(['', '', '', '', '', '', '', '', '']);

@@ -19,20 +19,16 @@ function App() {
   const [isLogedIn, setIsLogedIn] = useState(false);
 
   const [games, setGames] = useState<Game[]>([]);
-  const [gameId, setGameId] = useState<number>(1);
+  const [gameId, setGameId] = useState(1);
   const [currentGame, setCurrentGame] = useState(1);
-
-  const handleCurrentGame = () => {
-    if (gameId >= games.length + 1) return alert(`Game doesn't exist`);
-    else {
-      setCurrentGame(gameId);
-    }
-  };
-
-  const handleLogOut = () => {
-    setIsLogedIn(false);
-    localStorage.removeItem('token');
-  };
+  const [fetchedGameId, setFetchedGameId] = useState<Game>({
+    id: 1,
+    board: ['', '', '', '', '', '', '', '', ''],
+    player: 'X',
+    turn: 'X',
+    game_result: 'In progress',
+    game_ended: 0,
+  });
 
   const fetchGame = async () => {
     try {
@@ -53,10 +49,31 @@ function App() {
         board: JSON.parse(g.board),
       }));
       setGames(parsedGames);
-      // console.log(data);
+      console.log(parsedGames);
+      setFetchedGameId(parsedGames[data.length - 1]);
+      setCurrentGame(data[data.length - 1].id);
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleCurrentGame = () => {
+    // console.log(games[currentGame - 1]?.id);
+    // console.log(games.find((g) => g.id === gameId));
+    const currentGameId = games.findIndex((game) => game.id === gameId);
+    // console.log(gameId, games[currentGameId].id);
+    console.log(currentGameId);
+    if (currentGameId == -1) return alert(`Game doesn't exist`);
+    else {
+      setCurrentGame(games[currentGameId].id);
+      //Moram setovati fetchedgameid da bude id partije
+      setFetchedGameId(games[currentGameId]);
+    }
+  };
+
+  const handleLogOut = () => {
+    setIsLogedIn(false);
+    localStorage.removeItem('token');
   };
 
   const handleNewGame = async () => {
@@ -80,8 +97,10 @@ function App() {
         throw new Error(`Error: ${response.status}`);
       }
       const data = await response.json();
-      setCurrentGame(data.id);
+      console.log(data);
       fetchGame();
+      // setCurrentGame(data.id);
+      // setFetchedGameId(data);
     } catch (err) {
       console.log(err);
     }
@@ -92,7 +111,10 @@ function App() {
       fetchGame();
     }
   }, [isLogedIn]);
-  console.log(games);
+  // useEffect(() => {
+  //   fetchGame();
+  // }, [fetchedGameId]);
+  // console.log(games);
 
   const token = localStorage.getItem('token') || '';
 
@@ -111,12 +133,7 @@ function App() {
               games={games}
             />
             {games.length > 0 ? (
-              <Board
-                boardGame={games[currentGame - 1]?.board}
-                playerGame={games[currentGame - 1]?.player}
-                turnGame={games[currentGame - 1]?.turn}
-                gameEndedGame={Boolean(games[currentGame - 1]?.game_ended)}
-              />
+              <Board games={fetchedGameId} />
             ) : (
               <p>Loading game...</p>
             )}
@@ -128,7 +145,11 @@ function App() {
             setIsLogedIn={setIsLogedIn}
           />
         ) : (
-          <SignUp token={token} setIsRegistered={setIsRegistered} />
+          <SignUp
+            token={token}
+            setIsRegistered={setIsRegistered}
+            setIsLogedIn={setIsLogedIn}
+          />
         )}
       </div>
     </>

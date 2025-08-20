@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NTI2MjU4LCJleHAiOjE3NTU2MTI2NTh9.2FWKQxu9ox7mV15YUQgp5VHgMsR8vDzQqpyKWT0SxUc
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NjI5NzIwLCJleHAiOjE3NTU3MTYxMjB9.cVl1kgz-XrgAePQO28kYBFm-wOktP-GAjyp34IfsY28
 
 ### Create
 POST http://localhost:5000/game
@@ -40,7 +40,7 @@ Content-Type: application/json
 ### Update
 PUT http://localhost:5000/game/1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NjI4OTkyLCJleHAiOjE3NTU3MTUzOTJ9.fGEW0Zmhgv4gEus8KC5CMsyO2Iu-yI8QqHGvg1qOI7I
 
 {
     "board":["X", "", "", "", "", "", "", "", ""],

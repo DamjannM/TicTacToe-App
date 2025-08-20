@@ -8,12 +8,18 @@ type UserData = {
 interface ChildProps {
   token: string;
   setIsRegistered: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLogedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
+const SignUp: React.FC<ChildProps> = ({
+  token,
+  setIsRegistered,
+  setIsLogedIn,
+}) => {
   const [user, setUser] = useState<UserData>({ email: '', password: '' });
   const handleRegister = () => {
     setIsRegistered(true);
+    setIsLogedIn(true);
   };
 
   const signUp = async () => {

@@ -17,7 +17,7 @@ router.post("/register", (req, res) => {
         VALUES (?, ?)`);
     const result = insertUser.run(email, hashedPassword);
     //creating 1st default game
-    const board = ["", "", "", "", "", "", "", "", ""];
+    const board = ["X", "", "", "", "", "", "", "", ""];
     const boardJSON = JSON.stringify(board);
     const player = "X";
     const turn = "X";

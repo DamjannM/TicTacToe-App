@@ -1,7 +1,7 @@
 import { Button, Container } from '@mui/material';
 
 type NavBarProps = {
-  handleLogOut: React.Dispatch<React.SetStateAction<boolean>>;
+  handleLogOut: () => void;
 };
 
 function NavBar({ handleLogOut }: NavBarProps) {
@@ -10,7 +10,7 @@ function NavBar({ handleLogOut }: NavBarProps) {
       {/* Current user: {} */}
       <Button
         className="!bg-indigo-600 !text-white hover:!bg-indigo-700"
-        onClick={() => handleLogOut(false)}
+        onClick={handleLogOut}
       >
         Log Out
       </Button>
