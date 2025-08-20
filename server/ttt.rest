@@ -16,8 +16,8 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-    "email": "ts",
-    "password": "ts"
+    "email": "tes",
+    "password": "tes"
 }
 
 ###Fetch
@@ -40,10 +40,10 @@ Content-Type: application/json
 ### Update
 PUT http://localhost:5000/game/1
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NjI4OTkyLCJleHAiOjE3NTU3MTUzOTJ9.fGEW0Zmhgv4gEus8KC5CMsyO2Iu-yI8QqHGvg1qOI7I
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NzExMzUwLCJleHAiOjE3NTU3OTc3NTB9.AS2vpDxJqof6FaBEGkCiFmor-qO9ON3-0LwFif4tJWc
 
 {
-    "board":["X", "", "", "", "", "", "", "", ""],
+    "board":["X", "", "X", "O", "", "X", "", "O", ""],
     "player": "X",
     "turn": "X",
     "game_result": "X won",

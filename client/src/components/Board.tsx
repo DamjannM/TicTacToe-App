@@ -15,7 +15,7 @@ type BoardProps = {
 };
 
 function Board({ games }: BoardProps) {
-  // console.log(games);
+  // console.log(games.id);
   // if (!games) return <div>Loading...</div>;
   const [board, setBoard] = useState(games.board);
   const [player, setPlayer] = useState(games.player);
@@ -87,6 +87,7 @@ function Board({ games }: BoardProps) {
           return val;
         })
       );
+      //update DB
     }
     if (player === 'X') setPlayer('O');
     else if (player === 'O') setPlayer('X');

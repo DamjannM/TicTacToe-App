@@ -14,6 +14,8 @@ type Game = {
   game_ended: number;
 };
 
+type FetchMode = 'login' | 'create' | 'update';
+
 function App() {
   const [isRegistered, setIsRegistered] = useState(true);
   const [isLogedIn, setIsLogedIn] = useState(false);
@@ -30,7 +32,7 @@ function App() {
     game_ended: 0,
   });
 
-  const fetchGame = async () => {
+  const fetchGame = async (mode: FetchMode) => {
     try {
       const token = localStorage.getItem('token') || undefined;
       const response = await fetch('http://localhost:5000/game', {
@@ -48,10 +50,21 @@ function App() {
         ...g,
         board: JSON.parse(g.board),
       }));
-      setGames(parsedGames);
-      console.log(parsedGames);
-      setFetchedGameId(parsedGames[data.length - 1]);
-      setCurrentGame(data[data.length - 1].id);
+      if (mode === 'login') {
+        setGames(parsedGames);
+        setFetchedGameId(parsedGames[0]);
+        setCurrentGame(data[0].id);
+      }
+      if (mode === 'create') {
+        setGames(parsedGames);
+        setFetchedGameId(parsedGames[data.length - 1]);
+        setCurrentGame(data[data.length - 1].id);
+      }
+      if (mode === 'update') {
+        const currentGameId = games.findIndex((game) => game.id === gameId);
+        setGames(parsedGames);
+        setFetchedGameId(parsedGames[currentGameId]);
+      }
     } catch (err) {
       console.log(err);
     }
@@ -60,9 +73,10 @@ function App() {
   const handleCurrentGame = () => {
     // console.log(games[currentGame - 1]?.id);
     // console.log(games.find((g) => g.id === gameId));
+    fetchGame('update');
     const currentGameId = games.findIndex((game) => game.id === gameId);
     // console.log(gameId, games[currentGameId].id);
-    console.log(currentGameId);
+
     if (currentGameId == -1) return alert(`Game doesn't exist`);
     else {
       setCurrentGame(games[currentGameId].id);
@@ -98,7 +112,7 @@ function App() {
       }
       const data = await response.json();
       console.log(data);
-      fetchGame();
+      fetchGame('create');
       // setCurrentGame(data.id);
       // setFetchedGameId(data);
     } catch (err) {
@@ -108,7 +122,7 @@ function App() {
 
   useEffect(() => {
     if (isLogedIn) {
-      fetchGame();
+      fetchGame('login');
     }
   }, [isLogedIn]);
   // useEffect(() => {
