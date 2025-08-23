@@ -14,7 +14,7 @@ type Game = {
   game_ended: number;
 };
 
-type FetchMode = 'login' | 'create' | 'update';
+type FetchMode = 'login' | 'create' | 'update' | 'render';
 
 function App() {
   const [isRegistered, setIsRegistered] = useState(true);
@@ -31,6 +31,19 @@ function App() {
     game_result: 'In progress',
     game_ended: 0,
   });
+
+  useEffect(() => {
+    if (!isLogedIn) {
+      setFetchedGameId({
+        id: 1,
+        board: ['', '', '', '', '', '', '', '', ''],
+        player: 'X',
+        turn: 'X',
+        game_result: 'In progress',
+        game_ended: 0,
+      });
+    }
+  }, [isLogedIn]);
 
   const fetchGame = async (mode: FetchMode) => {
     try {
@@ -63,8 +76,11 @@ function App() {
       if (mode === 'update') {
         setGames(parsedGames);
         const currentGameId = games.findIndex((game) => game.id === gameId);
-        if (gameId > currentGameId) return;
+        if (gameId !== games[currentGameId].id) return;
         else setFetchedGameId(parsedGames[currentGameId]);
+      }
+      if (mode === 'render') {
+        setGames(parsedGames);
       }
     } catch (err) {
       console.log(err);
@@ -97,7 +113,7 @@ function App() {
           ...(token ? { Authorization: token } : {}),
         },
         body: JSON.stringify({
-          board: ['X', 'O', '', '', '', '', '', '', ''],
+          board: ['', '', '', '', '', '', '', '', ''],
           player: 'X',
           turn: 'X',
           game_result: 'In progress',
@@ -138,7 +154,10 @@ function App() {
               games={games}
             />
             {games.length > 0 ? (
-              <Board games={fetchedGameId} />
+              <Board
+                games={fetchedGameId}
+                onUpdate={() => fetchGame('render')}
+              />
             ) : (
               <p>Loading game...</p>
             )}
@@ -150,11 +169,7 @@ function App() {
             setIsLogedIn={setIsLogedIn}
           />
         ) : (
-          <SignUp
-            token={token}
-            setIsRegistered={setIsRegistered}
-            setIsLogedIn={setIsLogedIn}
-          />
+          <SignUp token={token} setIsRegistered={setIsRegistered} />
         )}
       </div>
     </>

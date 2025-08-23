@@ -48,7 +48,16 @@ router.put("/:id", (req, res) => {
   res.json({ message: "Game updated" });
 });
 
-// Delete game
-router.delete("/:id", (req, res) => {});
+//Update game_result
+router.put("/:id/result", (req, res) => {
+  const { game_result, game_ended } = req.body;
+  const { id } = req.params;
+
+  const updateGame = db.prepare(
+    "UPDATE game SET game_ended =?, game_result =? WHERE ID = ?"
+  );
+  updateGame.run(game_ended, game_result, id);
+  res.json({ message: "Game result updated" });
+});
 
 export default router;

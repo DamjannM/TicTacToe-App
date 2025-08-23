@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Square from './Square';
 import { Patterns } from '../WinningPatterns';
 
@@ -12,17 +12,26 @@ type Game = {
 };
 type BoardProps = {
   games: Game;
+  onUpdate: () => void;
 };
 
-function Board({ games }: BoardProps) {
+function Board({ games, onUpdate }: BoardProps) {
   const [board, setBoard] = useState(games.board);
   const [player, setPlayer] = useState(games.player);
   const [turn, setTurn] = useState(games.turn);
   const [gameEnded, setGameEnded] = useState(Boolean(games.game_ended));
+  const gameEndedRef = useRef(gameEnded);
 
   useEffect(() => {
-    checkWin();
-    checkIfTie();
+    gameEndedRef.current = gameEnded;
+    if (gameEnded) onUpdate();
+  }, [gameEnded]);
+
+  useEffect(() => {
+    const winnerFound = checkWin();
+    if (!winnerFound) {
+      checkIfTie();
+    }
   }, [board]);
 
   useEffect(() => {
@@ -34,30 +43,76 @@ function Board({ games }: BoardProps) {
     }
   }, [games]);
 
+  useEffect(() => {
+    if (!gameEnded && turn == 'O') {
+      function aiMove(board: string[]) {
+        if (gameEnded) return null;
+        const emptySquare = board
+          .map((cell, index) => (cell === '' ? index : null))
+          .filter((index) => index !== null) as number[];
+        if (emptySquare.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * emptySquare.length);
+        setTimeout(() => {
+          if (!gameEndedRef.current) chooseSquare(emptySquare[randomIndex]);
+        }, 500);
+      }
+      aiMove(board);
+    }
+  }, [gameEnded, turn]);
+
   const checkWin = () => {
-    Patterns.forEach((currPattern) => {
+    let foundWinningPattern = false;
+
+    Patterns.forEach(async (currPattern) => {
       const firstPlayer = board[currPattern[0]];
       if (firstPlayer == '') return;
-      let foundWinningPattern = true;
+      let isWinningPattern = true;
       currPattern.forEach((i) => {
         if (board[i] != firstPlayer) {
-          foundWinningPattern = false;
+          isWinningPattern = false;
         }
       });
-      if (foundWinningPattern) {
+      if (isWinningPattern) {
+        foundWinningPattern = true;
         alert(`Winner ${board[currPattern[0]]}`);
         setGameEnded(true);
+
+        //update game result
+        try {
+          const token = localStorage.getItem('token');
+          const game_result = {
+            game_ended: 1,
+            game_result: `${board[currPattern[0]]} won`,
+          };
+          const response = await fetch(
+            `http://localhost:5000/game/${games.id}/result`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: token } : {}),
+              },
+              body: JSON.stringify(game_result),
+            }
+          );
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to update game ${errorText}`);
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }
     });
+    return foundWinningPattern;
   };
 
-  const checkIfTie = () => {
+  const checkIfTie = async () => {
     if (!Array.isArray(board)) {
       console.warn('Board is not an array:', board);
       return;
     }
     let filled = true;
-    console.log(board);
     board.forEach((square) => {
       if (square == '') {
         filled = false;
@@ -67,6 +122,30 @@ function Board({ games }: BoardProps) {
     if (filled) {
       alert(`Game tied `);
       setGameEnded(true);
+      try {
+        const token = localStorage.getItem('token');
+        const game_result = {
+          game_ended: 1,
+          game_result: `Tie`,
+        };
+        const response = await fetch(
+          `http://localhost:5000/game/${games.id}/result`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: token } : {}),
+            },
+            body: JSON.stringify(game_result),
+          }
+        );
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to update game ${errorText}`);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -88,7 +167,6 @@ function Board({ games }: BoardProps) {
         game_result: 'In progress',
         game_ended: 0,
       };
-      console.log(updatedGame.player, updatedGame.turn);
 
       const response = await fetch(`http://localhost:5000/game/${games.id}`, {
         method: 'PUT',
@@ -109,22 +187,25 @@ function Board({ games }: BoardProps) {
   };
 
   return (
-    <div className="mt-36 flex flex-col items-center justify-center">
+    <div className="mt-24 flex flex-col items-center justify-center">
       <div className="flex flex-row">
         <Square
           val={board[0]}
           onClick={() => chooseSquare(0)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[1]}
           onClick={() => chooseSquare(1)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[2]}
           onClick={() => chooseSquare(2)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
       <div className="flex flex-row">
@@ -132,16 +213,19 @@ function Board({ games }: BoardProps) {
           val={board[3]}
           onClick={() => chooseSquare(3)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[4]}
           onClick={() => chooseSquare(4)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[5]}
           onClick={() => chooseSquare(5)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
       <div className="flex flex-row">
@@ -149,16 +233,19 @@ function Board({ games }: BoardProps) {
           val={board[6]}
           onClick={() => chooseSquare(6)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[7]}
           onClick={() => chooseSquare(7)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[8]}
           onClick={() => chooseSquare(8)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
     </div>

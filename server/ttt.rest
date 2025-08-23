@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NzE5MzUyLCJleHAiOjE3NTU4MDU3NTJ9.D5vuW5ClpP833pOkAJGqFl8WGcPqGSGnoM9DloBjQms
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1ODU3NzA3LCJleHAiOjE3NTU5NDQxMDd9.Uaw1cEei5_f0NUm43xH00zTNTJqHmyw2COAnqKGTuUw
 
 ### Create
 POST http://localhost:5000/game
@@ -48,4 +48,14 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NzEx
     "turn": "O",
     "game_result": "X won",
     "game_ended": 0
+}
+
+### Update game_result
+PUT http://localhost:5000/game/1/result
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1ODU2NDU3LCJleHAiOjE3NTU5NDI4NTd9.Ycm88ZFp33yHzCbBAa-1z75gfKvQnJVOEUnXGSPJqR8
+
+{
+    "game_ended": 1,
+    "game_result": "X won"
 }
