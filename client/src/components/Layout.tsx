@@ -6,7 +6,7 @@ type Game = {
   player: string;
   turn: string;
   game_result: string;
-  game_ended: number;
+  game_ended: boolean;
 };
 type LayoutProps = {
   setGameId: React.Dispatch<React.SetStateAction<number>>;

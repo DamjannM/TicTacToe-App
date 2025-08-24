@@ -12,6 +12,7 @@ client/build/
 .env
 .env.local
 client/.env
+.gitignore
 
 # Logs
 npm-debug.log*

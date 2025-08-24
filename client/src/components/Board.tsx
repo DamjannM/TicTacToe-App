@@ -8,7 +8,7 @@ type Game = {
   player: string;
   turn: string;
   game_result: string;
-  game_ended: number;
+  game_ended: boolean;
 };
 type BoardProps = {
   games: Game;
@@ -19,27 +19,30 @@ function Board({ games, onUpdate }: BoardProps) {
   const [board, setBoard] = useState(games.board);
   const [player, setPlayer] = useState(games.player);
   const [turn, setTurn] = useState(games.turn);
-  const [gameEnded, setGameEnded] = useState(Boolean(games.game_ended));
+  const [gameEnded, setGameEnded] = useState(games.game_ended);
   const gameEndedRef = useRef(gameEnded);
 
   useEffect(() => {
     gameEndedRef.current = gameEnded;
-    if (gameEnded) onUpdate();
-  }, [gameEnded]);
-
-  useEffect(() => {
     const winnerFound = checkWin();
     if (!winnerFound) {
       checkIfTie();
+      onUpdate();
     }
-  }, [board]);
+
+    console.log(gameEnded);
+    if (gameEnded) {
+      onUpdate();
+      console.log('test');
+    }
+  }, [gameEnded, board]);
 
   useEffect(() => {
     if (games) {
       setBoard(games.board);
       setPlayer(games.player);
       setTurn(games.turn);
-      setGameEnded(Boolean(games.game_ended));
+      setGameEnded(games.game_ended);
     }
   }, [games]);
 
@@ -81,7 +84,7 @@ function Board({ games, onUpdate }: BoardProps) {
         try {
           const token = localStorage.getItem('token');
           const game_result = {
-            game_ended: 1,
+            game_ended: true,
             game_result: `${board[currPattern[0]]} won`,
           };
           const response = await fetch(
@@ -125,7 +128,7 @@ function Board({ games, onUpdate }: BoardProps) {
       try {
         const token = localStorage.getItem('token');
         const game_result = {
-          game_ended: 1,
+          game_ended: true,
           game_result: `Tie`,
         };
         const response = await fetch(
@@ -165,7 +168,7 @@ function Board({ games, onUpdate }: BoardProps) {
         player: newPlayer,
         turn: newTurn,
         game_result: 'In progress',
-        game_ended: 0,
+        game_ended: false,
       };
 
       const response = await fetch(`http://localhost:5000/game/${games.id}`, {

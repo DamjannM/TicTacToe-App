@@ -16,13 +16,13 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-    "email": "ts",
-    "password": "ts"
+    "email": "ds",
+    "password": "ds"
 }
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1ODU3NzA3LCJleHAiOjE3NTU5NDQxMDd9.Uaw1cEei5_f0NUm43xH00zTNTJqHmyw2COAnqKGTuUw
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzU1OTg1ODMyLCJleHAiOjE3NTYwNzIyMzJ9.CvLybS7gphdeAxF4AwwjGqIo17AUO96WPxdmUw0AVrQ
 
 ### Create
 POST http://localhost:5000/game

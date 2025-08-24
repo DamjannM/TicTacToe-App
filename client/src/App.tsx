@@ -11,7 +11,7 @@ type Game = {
   player: string;
   turn: string;
   game_result: string;
-  game_ended: number;
+  game_ended: boolean;
 };
 
 type FetchMode = 'login' | 'create' | 'update' | 'render';
@@ -29,7 +29,7 @@ function App() {
     player: 'X',
     turn: 'X',
     game_result: 'In progress',
-    game_ended: 0,
+    game_ended: false,
   });
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function App() {
         player: 'X',
         turn: 'X',
         game_result: 'In progress',
-        game_ended: 0,
+        game_ended: false,
       });
     }
   }, [isLogedIn]);
@@ -70,8 +70,8 @@ function App() {
       }
       if (mode === 'create') {
         setGames(parsedGames);
-        setFetchedGameId(parsedGames[data.length - 1]);
-        setCurrentGame(data[data.length - 1].id);
+        setFetchedGameId(parsedGames[0]);
+        setCurrentGame(data[0].id);
       }
       if (mode === 'update') {
         setGames(parsedGames);
@@ -81,6 +81,7 @@ function App() {
       }
       if (mode === 'render') {
         setGames(parsedGames);
+        console.log('active');
       }
     } catch (err) {
       console.log(err);
@@ -117,7 +118,7 @@ function App() {
           player: 'X',
           turn: 'X',
           game_result: 'In progress',
-          game_ended: 0,
+          game_ended: false,
         }),
       });
       if (!response.ok) {

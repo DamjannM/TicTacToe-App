@@ -1,63 +1,76 @@
 import express from "express";
-import db from "../db";
+import prisma from "../prismaClient";
 
 const router = express.Router();
 
 // Get all games for logged user
-router.get("/", (req, res) => {
-  const getGame = db.prepare("SELECT * FROM game WHERE user_id =?");
-  if (!req.userId) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  const game = getGame.all(req.userId);
+router.get("/", async (req, res) => {
+  const game = await prisma.game.findMany({
+    where: {
+      user_id: req.userId,
+    },
+    orderBy: { id: "desc" },
+  });
   res.json(game);
 });
 
 // Create new game
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const { board, player, turn, game_result, game_ended } = req.body;
   const jsonString = JSON.stringify(board);
-  const createGame = db.prepare(
-    `INSERT INTO game (user_id, board,player, turn, game_result, game_ended) VALUES (?,?,?,?,?,?)`
-  );
-  if (!req.userId) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  const result = createGame.run(
-    req.userId,
-    jsonString,
-    player,
-    turn,
-    game_result,
-    game_ended
-  );
-  const id = result.lastInsertRowid;
-  res.json({ id, jsonString, player, turn, game_result, game_ended: 0 });
+
+  const createGame = await prisma.game.create({
+    data: {
+      user_id: req.userId!,
+      board: jsonString,
+      player: player,
+      turn: turn,
+      game_result: game_result,
+      game_ended: game_ended,
+    },
+  });
+
+  res.json(createGame);
 });
 
 // Update game
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const { board, turn, game_result, game_ended, player } = req.body;
   const jsonString = JSON.stringify(board);
   const { id } = req.params;
 
-  const updatedGame = db.prepare(
-    "UPDATE game SET board = ?,player=?, turn =?,game_result=?,game_ended=? WHERE ID = ?"
-  );
-  updatedGame.run(jsonString, player, turn, game_result, game_ended, id);
-  res.json({ message: "Game updated" });
+  const updateGame = await prisma.game.update({
+    where: {
+      id: parseInt(id),
+      user_id: req.userId,
+    },
+    data: {
+      board: jsonString,
+      turn: turn,
+      player: player,
+      game_result: game_result,
+      game_ended: !!game_ended,
+    },
+  });
+  res.json(updateGame);
 });
 
 //Update game_result
-router.put("/:id/result", (req, res) => {
+router.put("/:id/result", async (req, res) => {
   const { game_result, game_ended } = req.body;
   const { id } = req.params;
 
-  const updateGame = db.prepare(
-    "UPDATE game SET game_ended =?, game_result =? WHERE ID = ?"
-  );
-  updateGame.run(game_ended, game_result, id);
-  res.json({ message: "Game result updated" });
+  const updateGame = await prisma.game.update({
+    where: {
+      id: parseInt(id),
+      user_id: req.userId,
+    },
+    data: {
+      game_ended: !!game_ended,
+      game_result: game_result,
+    },
+  });
+  res.json(updateGame);
 });
 
 export default router;
