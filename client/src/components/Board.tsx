@@ -1,51 +1,120 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Square from './Square';
 import { Patterns } from '../WinningPatterns';
-import { Button } from '@mui/material';
 
-function Board({ boardGame }: { boardGame: string[] }) {
-  const [board, setBoard] = useState(boardGame);
-  const [player, setPlayer] = useState('X');
-  const [turn, setTurn] = useState('X');
-  const [gameEnded, setGameEnded] = useState(false);
-  console.log(boardGame);
+type Game = {
+  id: number;
+  board: string[];
+  player: string;
+  turn: string;
+  game_result: string;
+  game_ended: boolean;
+};
+type BoardProps = {
+  games: Game;
+  onUpdate: () => void;
+};
+
+function Board({ games, onUpdate }: BoardProps) {
+  const [board, setBoard] = useState(games.board);
+  const [player, setPlayer] = useState(games.player);
+  const [turn, setTurn] = useState(games.turn);
+  const [gameEnded, setGameEnded] = useState(games.game_ended);
+  const gameEndedRef = useRef(gameEnded);
 
   useEffect(() => {
-    checkWin();
-    checkIfTie();
-  }, [board]);
-
-  useEffect(() => {
-    if (boardGame) {
-      setBoard(boardGame);
+    gameEndedRef.current = gameEnded;
+    const winnerFound = checkWin();
+    if (!winnerFound) {
+      checkIfTie();
+      onUpdate();
     }
-  }, [boardGame]);
 
-  const gameReset = () => {
-    setBoard(['', '', '', '', '', '', '', '', '']);
-    setGameEnded(false);
-    setTurn('X');
-    setPlayer('X');
-  };
+    console.log(gameEnded);
+    if (gameEnded) {
+      onUpdate();
+      console.log('test');
+    }
+  }, [gameEnded, board]);
+
+  useEffect(() => {
+    if (games) {
+      setBoard(games.board);
+      setPlayer(games.player);
+      setTurn(games.turn);
+      setGameEnded(games.game_ended);
+    }
+  }, [games]);
+
+  useEffect(() => {
+    if (!gameEnded && turn == 'O') {
+      function aiMove(board: string[]) {
+        if (gameEnded) return null;
+        const emptySquare = board
+          .map((cell, index) => (cell === '' ? index : null))
+          .filter((index) => index !== null) as number[];
+        if (emptySquare.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * emptySquare.length);
+        setTimeout(() => {
+          if (!gameEndedRef.current) chooseSquare(emptySquare[randomIndex]);
+        }, 500);
+      }
+      aiMove(board);
+    }
+  }, [gameEnded, turn]);
 
   const checkWin = () => {
-    Patterns.forEach((currPattern) => {
+    let foundWinningPattern = false;
+
+    Patterns.forEach(async (currPattern) => {
       const firstPlayer = board[currPattern[0]];
       if (firstPlayer == '') return;
-      let foundWinningPattern = true;
+      let isWinningPattern = true;
       currPattern.forEach((i) => {
         if (board[i] != firstPlayer) {
-          foundWinningPattern = false;
+          isWinningPattern = false;
         }
       });
-      if (foundWinningPattern) {
+      if (isWinningPattern) {
+        foundWinningPattern = true;
         alert(`Winner ${board[currPattern[0]]}`);
         setGameEnded(true);
+
+        //update game result
+        try {
+          const token = localStorage.getItem('token');
+          const game_result = {
+            game_ended: true,
+            game_result: `${board[currPattern[0]]} won`,
+          };
+          const response = await fetch(
+            `http://localhost:5000/game/${games.id}/result`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: token } : {}),
+              },
+              body: JSON.stringify(game_result),
+            }
+          );
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to update game ${errorText}`);
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }
     });
+    return foundWinningPattern;
   };
 
-  const checkIfTie = () => {
+  const checkIfTie = async () => {
+    if (!Array.isArray(board)) {
+      console.warn('Board is not an array:', board);
+      return;
+    }
     let filled = true;
     board.forEach((square) => {
       if (square == '') {
@@ -56,43 +125,90 @@ function Board({ boardGame }: { boardGame: string[] }) {
     if (filled) {
       alert(`Game tied `);
       setGameEnded(true);
+      try {
+        const token = localStorage.getItem('token');
+        const game_result = {
+          game_ended: true,
+          game_result: `Tie`,
+        };
+        const response = await fetch(
+          `http://localhost:5000/game/${games.id}/result`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: token } : {}),
+            },
+            body: JSON.stringify(game_result),
+          }
+        );
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to update game ${errorText}`);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
-  const chooseSquare = (square: number) => {
-    if (turn === player && board[square] === '') {
-      setTurn(player === 'X' ? 'O' : 'X');
+  const chooseSquare = async (square: number) => {
+    if (turn !== player || board[square] !== '') return;
+    const newBoard = board.map((val, i) => (i === square ? player : val));
+    const newTurn = player === 'X' ? 'O' : 'X';
+    const newPlayer = newTurn;
+    setBoard(newBoard);
+    setTurn(newTurn);
+    setPlayer(newPlayer);
 
-      setBoard(
-        board.map((val, i) => {
-          if (i === square && val === '') {
-            return player;
-          }
-          return val;
-        })
-      );
+    try {
+      const token = localStorage.getItem('token');
+      const updatedGame = {
+        board: newBoard,
+        player: newPlayer,
+        turn: newTurn,
+        game_result: 'In progress',
+        game_ended: false,
+      };
+
+      const response = await fetch(`http://localhost:5000/game/${games.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: token } : {}),
+        },
+        body: JSON.stringify(updatedGame),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update game ${errorText}`);
+      }
+    } catch (err) {
+      console.error(err);
     }
-    if (player === 'X') setPlayer('O');
-    else if (player === 'O') setPlayer('X');
   };
 
   return (
-    <div className="mt-36 flex flex-col items-center justify-center">
+    <div className="mt-24 flex flex-col items-center justify-center">
       <div className="flex flex-row">
         <Square
           val={board[0]}
           onClick={() => chooseSquare(0)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[1]}
           onClick={() => chooseSquare(1)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[2]}
           onClick={() => chooseSquare(2)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
       <div className="flex flex-row">
@@ -100,16 +216,19 @@ function Board({ boardGame }: { boardGame: string[] }) {
           val={board[3]}
           onClick={() => chooseSquare(3)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[4]}
           onClick={() => chooseSquare(4)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[5]}
           onClick={() => chooseSquare(5)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
       <div className="flex flex-row">
@@ -117,19 +236,21 @@ function Board({ boardGame }: { boardGame: string[] }) {
           val={board[6]}
           onClick={() => chooseSquare(6)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[7]}
           onClick={() => chooseSquare(7)}
           gameEnded={gameEnded}
+          turn={turn}
         />
         <Square
           val={board[8]}
           onClick={() => chooseSquare(8)}
           gameEnded={gameEnded}
+          turn={turn}
         />
       </div>
-      <Button onClick={gameReset}>New Game</Button>
     </div>
   );
 }

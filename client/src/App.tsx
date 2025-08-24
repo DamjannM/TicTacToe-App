@@ -3,6 +3,7 @@ import SignUp from './components/SignUp.tsx';
 import Board from './components/Board.tsx';
 import { useState, useEffect } from 'react';
 import Layout from './components/Layout.tsx';
+import NavBar from './components/NavBar.tsx';
 
 type Game = {
   id: number;
@@ -10,26 +11,41 @@ type Game = {
   player: string;
   turn: string;
   game_result: string;
-  game_ended: number;
+  game_ended: boolean;
 };
+
+type FetchMode = 'login' | 'create' | 'update' | 'render';
 
 function App() {
   const [isRegistered, setIsRegistered] = useState(true);
   const [isLogedIn, setIsLogedIn] = useState(false);
 
-  //transfered from layout
   const [games, setGames] = useState<Game[]>([]);
-  const [gameId, setGameId] = useState<number>(1);
+  const [gameId, setGameId] = useState(1);
   const [currentGame, setCurrentGame] = useState(1);
+  const [fetchedGameId, setFetchedGameId] = useState<Game>({
+    id: 1,
+    board: ['', '', '', '', '', '', '', '', ''],
+    player: 'X',
+    turn: 'X',
+    game_result: 'In progress',
+    game_ended: false,
+  });
 
-  const handleCurrentGame = () => {
-    if (gameId >= games.length + 1) return alert(`Game doesn't exist`);
-    else {
-      setCurrentGame(gameId);
+  useEffect(() => {
+    if (!isLogedIn) {
+      setFetchedGameId({
+        id: 1,
+        board: ['', '', '', '', '', '', '', '', ''],
+        player: 'X',
+        turn: 'X',
+        game_result: 'In progress',
+        game_ended: false,
+      });
     }
-  };
+  }, [isLogedIn]);
 
-  const fetchGame = async () => {
+  const fetchGame = async (mode: FetchMode) => {
     try {
       const token = localStorage.getItem('token') || undefined;
       const response = await fetch('http://localhost:5000/game', {
@@ -47,11 +63,45 @@ function App() {
         ...g,
         board: JSON.parse(g.board),
       }));
-      setGames(parsedGames);
-      // console.log(data);
+      if (mode === 'login') {
+        setGames(parsedGames);
+        setFetchedGameId(parsedGames[0]);
+        setCurrentGame(data[0].id);
+      }
+      if (mode === 'create') {
+        setGames(parsedGames);
+        setFetchedGameId(parsedGames[0]);
+        setCurrentGame(data[0].id);
+      }
+      if (mode === 'update') {
+        setGames(parsedGames);
+        const currentGameId = games.findIndex((game) => game.id === gameId);
+        if (gameId !== games[currentGameId].id) return;
+        else setFetchedGameId(parsedGames[currentGameId]);
+      }
+      if (mode === 'render') {
+        setGames(parsedGames);
+        console.log('active');
+      }
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const handleCurrentGame = () => {
+    fetchGame('update');
+    const currentGameId = games.findIndex((game) => game.id === gameId);
+
+    if (currentGameId == -1) return alert(`Game doesn't exist`);
+    else {
+      setCurrentGame(games[currentGameId].id);
+      setFetchedGameId(games[currentGameId]);
+    }
+  };
+
+  const handleLogOut = () => {
+    setIsLogedIn(false);
+    localStorage.removeItem('token');
   };
 
   const handleNewGame = async () => {
@@ -64,19 +114,19 @@ function App() {
           ...(token ? { Authorization: token } : {}),
         },
         body: JSON.stringify({
-          board: ['X', 'O', '', '', '', '', '', '', ''],
+          board: ['', '', '', '', '', '', '', '', ''],
           player: 'X',
           turn: 'X',
           game_result: 'In progress',
-          game_ended: 0,
+          game_ended: false,
         }),
       });
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
       const data = await response.json();
-      setCurrentGame(data.id);
-      fetchGame();
+      console.log(data);
+      fetchGame('create');
     } catch (err) {
       console.log(err);
     }
@@ -84,10 +134,9 @@ function App() {
 
   useEffect(() => {
     if (isLogedIn) {
-      fetchGame();
+      fetchGame('login');
     }
   }, [isLogedIn]);
-  console.log(games);
 
   const token = localStorage.getItem('token') || '';
 
@@ -97,6 +146,7 @@ function App() {
         <p>TicTacToe</p>
         {isLogedIn ? (
           <>
+            <NavBar handleLogOut={handleLogOut} />
             <Layout
               setGameId={setGameId}
               currentGame={currentGame}
@@ -105,7 +155,10 @@ function App() {
               games={games}
             />
             {games.length > 0 ? (
-              <Board boardGame={games[currentGame - 1]?.board} />
+              <Board
+                games={fetchedGameId}
+                onUpdate={() => fetchGame('render')}
+              />
             ) : (
               <p>Loading game...</p>
             )}

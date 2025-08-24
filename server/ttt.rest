@@ -16,13 +16,13 @@ POST http://localhost:5000/auth/login
 Content-Type: application/json
 
 {
-    "email": "ts",
-    "password": "ts"
+    "email": "ds",
+    "password": "ds"
 }
 
 ###Fetch
 GET http://localhost:5000/game
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiaWF0IjoxNzU1OTg1ODMyLCJleHAiOjE3NTYwNzIyMzJ9.CvLybS7gphdeAxF4AwwjGqIo17AUO96WPxdmUw0AVrQ
 
 ### Create
 POST http://localhost:5000/game
@@ -38,14 +38,24 @@ Content-Type: application/json
 }
 
 ### Update
-PUT http://localhost:5000/game/1
+PUT http://localhost:5000/game/2
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1NDQ5OTc1LCJleHAiOjE3NTU1MzYzNzV9.6wlKb6LaHO9ZGRjyTkbps2e4DKO564bKzgdfwYVQgos
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzU1NzExMzUwLCJleHAiOjE3NTU3OTc3NTB9.AS2vpDxJqof6FaBEGkCiFmor-qO9ON3-0LwFif4tJWc
 
 {
-    "board":["X", "O", "", "", "", "", "", "", ""],
-    "player": "X",
-    "turn": "X",
+    "board":["X", "", "X", "O", "", "X", "", "O", ""],
+    "player": "O",
+    "turn": "O",
     "game_result": "X won",
     "game_ended": 0
+}
+
+### Update game_result
+PUT http://localhost:5000/game/1/result
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzU1ODU2NDU3LCJleHAiOjE3NTU5NDI4NTd9.Ycm88ZFp33yHzCbBAa-1z75gfKvQnJVOEUnXGSPJqR8
+
+{
+    "game_ended": 1,
+    "game_result": "X won"
 }
