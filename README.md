@@ -59,6 +59,6 @@ The `ttt.rest` file includes requests for:
 ### How to Use the REST Client
 
 1. Install the **REST Client** extension for VS Code.
-2. Open `todo-app.rest`.
+2. Open `ttt.rest`.
 3. Run the requests by clicking on the "Send Request" link above each block of HTTP code.
 4. Make sure to copy the token from the login response and replace `{{token}}` with the actual JWT token for protected routes.
