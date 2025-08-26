@@ -16,7 +16,7 @@ Dockerized full-stack TicTacToe application
 
 ```bash
 git clone https://github.com/DamjannM/TicTacToe-App
-cd tictactoe
+cd TicTacToe-App
 ```
 
 2. **Generate the Prisma Client**:
