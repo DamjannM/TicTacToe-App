@@ -18,6 +18,9 @@ router.post("/register", async (req, res) => {
         password: hashedPassword,
       },
     });
+    if (!user) {
+      res.status(404).send({ message: "User already exists" });
+    }
     //creating 1st default game
     const board = ["", "", "", "", "", "", "", "", ""];
     const boardJSON = JSON.stringify(board);
@@ -42,11 +45,13 @@ router.post("/register", async (req, res) => {
       expiresIn: "24h",
     });
     res.json({ token });
-  } catch (err) {
-    if (err instanceof Error) {
-      console.log(err.message);
-      res.sendStatus(503);
+  } catch (error: any) {
+    if (error.code === "P2002" && error.meta?.target?.includes("email")) {
+      return res.status(400).send({ message: "User already exists" });
     }
+
+    console.error(error);
+    res.status(500).send({ message: "Something went wrong" });
   }
 });
 //LOGIN

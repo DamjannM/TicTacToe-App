@@ -47,6 +47,7 @@ function Layout({
             input: { color: 'white' },
             label: { color: 'white' },
             '& .MuiOutlinedInput-root': {
+              borderRadius: '2rem',
               '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
               '&:hover fieldset': {
                 borderColor: '#3f50b5',
@@ -63,14 +64,14 @@ function Layout({
           slotProps={{ input: { inputProps: { min: 1 } } }}
         />
         <Button
-          className="!bg-indigo-600 !text-white hover:!bg-indigo-700"
+          className="!rounded-4xl !bg-indigo-600 !text-white hover:!bg-indigo-700"
           onClick={handleCurrentGame}
         >
           Join Game
         </Button>
         <p>or</p>
         <Button
-          className="!bg-indigo-600 !text-white hover:!bg-indigo-700"
+          className="!rounded-4xl !bg-indigo-600 !text-white hover:!bg-indigo-700"
           onClick={handleNewGame}
         >
           New Game
