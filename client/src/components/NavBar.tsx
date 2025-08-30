@@ -7,9 +7,8 @@ type NavBarProps = {
 function NavBar({ handleLogOut }: NavBarProps) {
   return (
     <Container>
-      {/* Current user: {} */}
       <Button
-        className="!bg-indigo-600 !text-white hover:!bg-indigo-700"
+        className="!rounded-4xl !bg-indigo-600 !text-white hover:!bg-indigo-700"
         onClick={handleLogOut}
       >
         Log Out

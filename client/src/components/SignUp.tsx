@@ -12,11 +12,16 @@ interface ChildProps {
 
 const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
   const [user, setUser] = useState<UserData>({ email: '', password: '' });
+  const [serverMessage, setServerMessage] = useState('');
   const handleRegister = () => {
     setIsRegistered(true);
   };
 
   const signUp = async () => {
+    if (!user.email.includes('@') && !user.email.includes('.'))
+      return setServerMessage('❌ Invalid email format');
+    if (user.password.length < 8)
+      return setServerMessage('❌ Password must contain atleast 8 characters');
     const response = await fetch('http://localhost:5000/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -25,7 +30,12 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
         password: user.password,
       }),
     });
+
     const data = await response.json();
+    if (!response.ok) {
+      setServerMessage(`❌ ${data.message}`);
+      throw new Error(`Server error: ${response.status}`);
+    }
     if (data.token) {
       token = data.token;
       localStorage.setItem('token', token);
@@ -35,8 +45,10 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
     handleRegister();
   };
   return (
-    <Box sx={{ pt: 20 }}>
+    <Box className="mt-60 flex w-2xs flex-col items-center gap-4 rounded-4xl border-2 border-indigo-400 p-3 shadow-2xl shadow-indigo-500">
+      <Typography variant="subtitle2">{serverMessage}</Typography>
       <TextField
+        type="email"
         label="email"
         size="small"
         value={user.email}
@@ -47,6 +59,7 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
           input: { color: 'white' },
           label: { color: 'white' },
           '& .MuiOutlinedInput-root': {
+            borderRadius: '2rem',
             '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
             '&:hover fieldset': {
               borderColor: '#3f50b5',
@@ -70,6 +83,7 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
           input: { color: 'white' },
           label: { color: 'white' },
           '& .MuiOutlinedInput-root': {
+            borderRadius: '2rem',
             '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
             '&:hover fieldset': {
               borderColor: '#3f50b5',
@@ -81,7 +95,12 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
         }}
       />
 
-      <Button variant="outlined" onClick={signUp} size="large">
+      <Button
+        variant="outlined"
+        onClick={signUp}
+        size="large"
+        className="!rounded-4xl"
+      >
         Sign Up
       </Button>
       <Typography variant="subtitle2">Already have an account? </Typography>

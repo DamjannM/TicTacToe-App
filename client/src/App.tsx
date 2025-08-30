@@ -142,8 +142,8 @@ function App() {
 
   return (
     <>
-      <div className="relative h-screen bg-indigo-950 text-center text-xl font-semibold text-indigo-100">
-        <p>TicTacToe</p>
+      <div className="relative flex h-screen flex-col items-center bg-indigo-950 text-center text-xl font-semibold text-indigo-100">
+        <p className="top-0">TicTacToe</p>
         {isLogedIn ? (
           <>
             <NavBar handleLogOut={handleLogOut} />

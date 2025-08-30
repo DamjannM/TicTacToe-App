@@ -21,6 +21,8 @@ const Login: React.FC<ChildProps> = ({
   };
 
   const handleLogin = async () => {
+    if (!email.includes('@') && !email.includes('.'))
+      return setServerMessage('❌ Invalid email format');
     try {
       const response = await fetch('http://localhost:5000/auth/login', {
         method: 'POST',
@@ -47,11 +49,10 @@ const Login: React.FC<ChildProps> = ({
       setIsLogedIn(true);
     } catch (err) {
       console.log('Login failed', err);
-      // setServerMessage(String(err));
     }
   };
   return (
-    <Box sx={{ pt: 20 }}>
+    <Box className="mt-60 flex w-2xs flex-col items-center gap-4 rounded-4xl border-2 border-indigo-400 p-3 shadow-2xl shadow-indigo-500">
       <Typography variant="subtitle2">{serverMessage}</Typography>
       <TextField
         label="email"
@@ -64,6 +65,7 @@ const Login: React.FC<ChildProps> = ({
           input: { color: 'white' },
           label: { color: 'white' },
           '& .MuiOutlinedInput-root': {
+            borderRadius: '2rem',
             '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
             '&:hover fieldset': {
               borderColor: '#3f50b5',
@@ -87,6 +89,7 @@ const Login: React.FC<ChildProps> = ({
           input: { color: 'white' },
           label: { color: 'white' },
           '& .MuiOutlinedInput-root': {
+            borderRadius: '2rem',
             '&.Mui-focused fieldset': { borderColor: '#3f50b5' },
             '&:hover fieldset': {
               borderColor: '#3f50b5',
@@ -98,10 +101,15 @@ const Login: React.FC<ChildProps> = ({
         }}
       />
 
-      <Button variant="outlined" onClick={handleLogin} size="large">
+      <Button
+        variant="outlined"
+        onClick={handleLogin}
+        size="large"
+        className="!rounded-4xl"
+      >
         Login
       </Button>
-      <Typography variant="subtitle2">Dont have an account yet? </Typography>
+      <Typography variant="subtitle2">Don't have an account yet? </Typography>
       <Button onClick={handleRegister} size="large">
         Register
       </Button>

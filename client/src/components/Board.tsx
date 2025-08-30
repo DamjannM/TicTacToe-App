@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Square from './Square';
 import { Patterns } from '../WinningPatterns';
+import Modal from './Modal';
 
 type Game = {
   id: number;
@@ -21,6 +22,8 @@ function Board({ games, onUpdate }: BoardProps) {
   const [turn, setTurn] = useState(games.turn);
   const [gameEnded, setGameEnded] = useState(games.game_ended);
   const gameEndedRef = useRef(gameEnded);
+  const [modalMessage, setModalMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     gameEndedRef.current = gameEnded;
@@ -77,7 +80,8 @@ function Board({ games, onUpdate }: BoardProps) {
       });
       if (isWinningPattern) {
         foundWinningPattern = true;
-        alert(`Winner ${board[currPattern[0]]}`);
+        setShowModal(true);
+        setModalMessage(`Winner ${board[currPattern[0]]}`);
         setGameEnded(true);
 
         //update game result
@@ -123,7 +127,8 @@ function Board({ games, onUpdate }: BoardProps) {
     });
 
     if (filled) {
-      alert(`Game tied `);
+      setShowModal(true);
+      setModalMessage(`Tie`);
       setGameEnded(true);
       try {
         const token = localStorage.getItem('token');
@@ -191,6 +196,11 @@ function Board({ games, onUpdate }: BoardProps) {
 
   return (
     <div className="mt-24 flex flex-col items-center justify-center">
+      {showModal ? (
+        <Modal setShowModal={setShowModal}>{modalMessage}</Modal>
+      ) : (
+        ''
+      )}
       <div className="flex flex-row">
         <Square
           val={board[0]}
