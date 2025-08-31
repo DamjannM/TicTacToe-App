@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
 type UserData = {
@@ -44,6 +44,15 @@ const SignUp: React.FC<ChildProps> = ({ token, setIsRegistered }) => {
     }
     handleRegister();
   };
+  useEffect(() => {
+    const handleEnterKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') signUp();
+      console.log(event.key);
+    };
+
+    window.addEventListener('keydown', handleEnterKeyDown);
+    return () => window.removeEventListener('keydown', handleEnterKeyDown);
+  }, [user.email, user.password]);
   return (
     <Box className="mt-60 flex w-2xs flex-col items-center gap-4 rounded-4xl border-2 border-indigo-400 p-3 shadow-2xl shadow-indigo-500">
       <Typography variant="subtitle2">{serverMessage}</Typography>
