@@ -42,7 +42,6 @@ _Also_ - to run/apply migrations if necessary:
 6.  **Access the App**:
 
 Open `http://localhost:5173/` in your browser to see the frontend. You can register, log in, and play X-O against AI from there.
-NOTE: You must click on login/register buttons, there is no submit event on pressing ENTER key
 
 The **REST Client** file (`ttt.rest`) is provided to help you test the API using HTTP requests directly. You can run these requests using the **REST Client** extension for VS Code or other compatible tools.
 

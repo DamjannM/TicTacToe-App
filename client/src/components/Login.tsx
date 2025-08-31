@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ChildProps {
   token: string;
@@ -51,6 +51,15 @@ const Login: React.FC<ChildProps> = ({
       console.log('Login failed', err);
     }
   };
+  useEffect(() => {
+    const handleEnterKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') handleLogin();
+      console.log(event.key);
+    };
+
+    window.addEventListener('keydown', handleEnterKeyDown);
+    return () => window.removeEventListener('keydown', handleEnterKeyDown);
+  }, [email, password]);
   return (
     <Box className="mt-60 flex w-2xs flex-col items-center gap-4 rounded-4xl border-2 border-indigo-400 p-3 shadow-2xl shadow-indigo-500">
       <Typography variant="subtitle2">{serverMessage}</Typography>
