@@ -1,5 +1,9 @@
 import { Button, Container, TextField } from '@mui/material';
 import GameInfo from './GameInfo';
+import BurgerIcon from '../../public/burger-menu.svg';
+import closeCircle from '../../public/close-circle.svg';
+import { useState } from 'react';
+
 type Game = {
   id: number;
   board: string[];
@@ -23,10 +27,25 @@ function Layout({
   handleNewGame,
   games,
 }: LayoutProps) {
+  const [hideBar, setHideBar] = useState(true);
   return (
     <>
-      <Container maxWidth="sm">
-        <div className="max-h scrollbar-hide absolute top-10 bottom-10 left-10 w-80 overflow-y-auto rounded-3xl bg-indigo-900">
+      <Container>
+        <div className="lg:hidden">
+          <img
+            src={BurgerIcon}
+            className="w-8"
+            onClick={() => setHideBar(false)}
+          />
+        </div>
+        <div
+          className={`scrollbar-hide absolute top-2 bottom-2 z-999 w-80 overflow-y-auto rounded-3xl bg-indigo-900 sm:top-10 sm:bottom-10 sm:left-5 md:left-5 lg:left-10 lg:block ${hideBar ? 'hidden' : ''}`}
+        >
+          <img
+            src={closeCircle}
+            className="absolute top-1 right-2 z-1000 w-8 lg:hidden"
+            onClick={() => setHideBar(true)}
+          />
           {games.map((game) => (
             <GameInfo
               key={game.id}
@@ -36,7 +55,7 @@ function Layout({
           ))}
         </div>
       </Container>
-      <div className="mt-3 flex justify-center gap-4">
+      <div className="grid justify-center gap-1 sm:mt-3 sm:flex sm:gap-4">
         <TextField
           size="small"
           type="number"
